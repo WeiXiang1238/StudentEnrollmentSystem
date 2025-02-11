@@ -123,7 +123,7 @@
         document.getElementById("passwordSection").style.display = "none";
         document.getElementById("invoiceSection").style.display = "block";
 
-        document.getElementById("invoiceNo").innerText = "IN00" + paymentResponse.PaymentID;
+        document.getElementById("invoiceNo").innerText = "PAY-" + paymentResponse.PaymentID;
         document.getElementById("invoiceDate").innerText = new Date(paymentResponse.PaymentDate).toLocaleString('en-US', {
         year: 'numeric',
         month: '2-digit',

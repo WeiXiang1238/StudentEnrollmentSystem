@@ -1,0 +1,138 @@
+﻿@page
+@model StudentStatementModel
+@{
+    ViewData["Title"] = "Student Statement";
+}
+
+<div id="studentStatementPage">
+
+
+<h2>Student Statement</h2>
+
+<!-- Date Filter -->
+<form method="post" id="filterForm">
+    <div class="row">
+        <div class="col-md-3">
+            <label>From</label>
+            <input type="date" asp-for="FromDate" class="form-control" required />
+        </div>
+        <div class="col-md-3">
+            <label>To</label>
+            <input type="date" asp-for="ToDate" class="form-control" required />
+        </div>
+        <div class="col-md-3 align-self-end">
+            <button type="submit" class="btn btn-primary">View</button>
+            <button type="button" class="btn btn-success" onclick="printStatement()">Print</button>
+        </div>
+    </div>
+</form>
+
+<!-- Display Student Transactions -->
+@if (Model.StatementData.Any())
+{
+    <div class="mt-4" id="printableArea">
+        <!-- Student Information -->
+        @if (Model.Student != null)
+        {
+            <div class="mt-3 p-3 border rounded bg-light">
+                <h5>Student Information</h5>
+                <p><strong>Name:</strong> @Model.Student.FullName</p>
+                <p><strong>Email:</strong> @Model.Student.Email</p>
+                <p><strong>Student ID:</strong> @Model.Student.StudentID</p>
+            </div>
+        }
+
+        <table class="table table-bordered">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>Date</th>
+                    <th>Process</th>
+                    <th>Particulars</th>
+                    <th>Course Code/Invoice No</th>
+                    <th>Semester</th>
+                    <th>Amount Due (RM)</th>
+                    <th>Amount Paid (RM)</th>
+                    <th>Total Due/Paid (RM)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var semester in Model.StatementData.GroupBy(x => x.Semester))
+                {
+                    <tr class="bg-secondary text-white">
+                        <td colspan="8"><strong>@semester.Key</strong></td>
+                    </tr>
+
+                    @foreach (var item in semester)
+                    {
+                        <tr>
+                            <td>@item.Date.ToString("dd-MM-yy")</td>
+                            <td>@item.Process</td>
+                            <td>@item.Particulars</td>
+                            <td>@item.DocumentNo</td>
+                            <td>@item.Semester</td>
+                            <td>@(item.Process == "ENROL" ? item.AmountDue.ToString("N2") : "-")</td>
+                            <td>@(item.Process == "PAYMENT" ? item.AmountPaid.ToString("N2") : "-")</td>
+                            <td>@(item.TotalDuePaid.ToString("N2"))</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+        <!-- Summary -->
+        <h4 class="mt-4">Balance - University Fee</h4>
+        <table class="table table-bordered">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>Total Due (RM)</th>
+                    <th>Total Paid (RM)</th>
+                    <th>Balance (RM)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Model.TotalDue.ToString("N2")</td>
+                    <td>@Model.TotalPaid.ToString("N2")</td>
+                    <td>@(Model.TotalDue - Model.TotalPaid).ToString("N2")</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p class="mt-3 text-danger">No transactions found for the selected date range.</p>
+}
+</div>
+
+<!-- Print Script -->
+<script>
+            function printStatement() {
+        // Temporarily override CSS to make everything visible
+        let style = document.createElement('style');
+        style.innerHTML = `
+            @@media print {
+                body {
+                    visibility: none !important;
+                }
+                #printableArea {
+                    visibility: visible !important;
+                    width: 100%;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Hide non-printable elements
+        document.getElementById("filterForm").style.display = "none";
+        document.querySelector(".btn-success").style.display = "none";
+
+        // Print the page
+        window.print();
+
+        // Restore the visibility & remove added style
+        document.head.removeChild(style);
+        document.getElementById("filterForm").style.display = "block";
+        document.querySelector(".btn-success").style.display = "inline-block";
+    }
+</script>

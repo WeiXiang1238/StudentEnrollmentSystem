@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "GveQ1M7TJ5vgu58NbVBqnhjrETXbwXvcpLeaP8VgzmA=",
+  "Hash": "OmmC/Q+vBoEHTLbfWz05Nwv4THv4qCXLY8A9zpkg4MY=",
   "Source": "StudentEnrollmentSystem",
   "BasePath": "_content/StudentEnrollmentSystem",
   "Mode": "Default",
@@ -73,8 +73,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "7ze62hm4ds",
-      "Integrity": "reixhrMccjGoFsQVft97ett5cMw2j4XHipMTMCEngOw=",
+      "Fingerprint": "ticxda1171",
+      "Integrity": "W10oBzuzZxLDw2BCjAmqisHQvc9VcZgw7Ds9v+fZuNo=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\site.css"
@@ -1321,51 +1321,6 @@
   ],
   "Endpoints": [
     {
-      "Route": "css/site.7ze62hm4ds.css",
-      "AssetFile": "C:\\Users\\User\\Desktop\\INTI\\Term8\\PRG3204E - WEB APPLICATION DEVELOPMENT\\StudentEnrollmentSystem\\wwwroot\\css\\site.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "516"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"reixhrMccjGoFsQVft97ett5cMw2j4XHipMTMCEngOw=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sat, 08 Feb 2025 05:41:00 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "7ze62hm4ds"
-        },
-        {
-          "Name": "label",
-          "Value": "css/site.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-reixhrMccjGoFsQVft97ett5cMw2j4XHipMTMCEngOw="
-        }
-      ]
-    },
-    {
       "Route": "css/site.css",
       "AssetFile": "C:\\Users\\User\\Desktop\\INTI\\Term8\\PRG3204E - WEB APPLICATION DEVELOPMENT\\StudentEnrollmentSystem\\wwwroot\\css\\site.css",
       "Selectors": [],
@@ -1376,7 +1331,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "516"
+          "Value": "518"
         },
         {
           "Name": "Content-Type",
@@ -1384,11 +1339,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"reixhrMccjGoFsQVft97ett5cMw2j4XHipMTMCEngOw=\""
+          "Value": "\"W10oBzuzZxLDw2BCjAmqisHQvc9VcZgw7Ds9v+fZuNo=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 08 Feb 2025 05:41:00 GMT"
+          "Value": "Tue, 11 Feb 2025 16:25:52 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1398,7 +1353,52 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-reixhrMccjGoFsQVft97ett5cMw2j4XHipMTMCEngOw="
+          "Value": "sha256-W10oBzuzZxLDw2BCjAmqisHQvc9VcZgw7Ds9v+fZuNo="
+        }
+      ]
+    },
+    {
+      "Route": "css/site.ticxda1171.css",
+      "AssetFile": "C:\\Users\\User\\Desktop\\INTI\\Term8\\PRG3204E - WEB APPLICATION DEVELOPMENT\\StudentEnrollmentSystem\\wwwroot\\css\\site.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "518"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"W10oBzuzZxLDw2BCjAmqisHQvc9VcZgw7Ds9v+fZuNo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 11 Feb 2025 16:25:52 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ticxda1171"
+        },
+        {
+          "Name": "label",
+          "Value": "css/site.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-W10oBzuzZxLDw2BCjAmqisHQvc9VcZgw7Ds9v+fZuNo="
         }
       ]
     },

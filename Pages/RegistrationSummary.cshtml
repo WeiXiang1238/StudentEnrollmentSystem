@@ -1,0 +1,129 @@
+﻿@page
+@model RegistrationSummaryModel
+@{
+    ViewData["Title"] = "Registration Summary / Class Timetable";
+}
+
+<div id="printable">
+
+<h2>Registration Summary / Class Timetable</h2>
+
+<!-- Student Information -->
+<div class="card p-4 mb-4">
+    <h4 class="text-center">REGISTRATION SUMMARY</h4>
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Matriculation No:</strong> @Model.Student.StudentID</p>
+            <p><strong>Student Name:</strong> @Model.Student.FullName</p>
+            <p><strong>Session:</strong> @Model.CurrentSemester.Name</p>
+            <p><strong>Mode of Study:</strong> Distance Learning - Full Time</p>
+            <p><strong>Year:</strong> 2</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>School:</strong> GBL211 Information Technology</p>
+            <p><strong>Level:</strong> Degree</p>
+            <p><strong>Program:</strong> BCSILS - Bachelor of Computer Science (Honours)</p>
+            <p><strong>Major:</strong> -</p>
+            <p><strong>Semester:</strong> @Model.CurrentSemester.SemesterID</p>
+        </div>
+    </div>
+</div>
+
+<!-- Course List -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Course Code</th>
+            <th>Course Name</th>
+            <th>Lecturer</th>
+            <th>Credit Hours</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var course in Model.EnrolledCourses.Select((value, index) => new { index, value }))
+        {
+            <tr>
+                <td>@(course.index + 1)</td>
+                <td>@course.value.Course.CourseCode</td>
+                <td>@course.value.Course.CourseName</td>
+                <td>Lecturer Name Placeholder</td>
+                <td>@course.value.Course.Credits</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Timetable Grid -->
+<table class="table table-bordered text-center">
+    <thead class="bg-dark text-white">
+        <tr>
+            <th>Day</th>
+            @for (int hour = 8; hour <= 22; hour++)
+            {
+                <th>@hour:00</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var day in new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" })
+        {
+            <tr>
+                <td class="bg-secondary text-white">@day.Substring(0, 3).ToUpper()</td>
+                @for (int hour = 8; hour <= 22; hour++)
+                {
+                    var course = Model.EnrolledCourses
+                    .Select(e => e.Course)
+                    .FirstOrDefault(c => c.Day == day && c.StartTime.Hours <= hour && c.EndTime.Hours > hour);
+
+                    if (course != null)
+                    {
+                        <td class="bg-light">@course.CourseCode (@course.Venue)</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+</div>
+
+<!-- Print Button -->
+<button onclick="printSummary()" class="btn btn-success mt-3">Print</button>
+
+@section Scripts {
+    <script>
+        window.addEventListener('beforeprint', function() {
+            document.body.classList.add('printable');
+        });
+        window.addEventListener('afterprint', function() {
+            document.body.classList.remove('printable');
+        });
+            function printSummary() {
+            // Temporarily disable the global print CSS rule
+            let styleSheet = document.createElement("style");
+            styleSheet.innerHTML = `
+            @@media print {
+                    body {
+                        visibility: none !important;
+                    }
+                    #printable{
+                        visibility: visible !important;
+                    }
+                }
+            `;
+            document.head.appendChild(styleSheet);
+
+            // Print the page
+            window.print();
+
+            // Restore the original CSS after printing
+            setTimeout(() => {
+                document.head.removeChild(styleSheet);
+            }, 1000);
+        }
+    </script>
+}
