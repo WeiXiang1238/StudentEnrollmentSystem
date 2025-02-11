@@ -1,0 +1,14 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+<script>
+    console.log("User Identity: @User.Identity.IsAuthenticated");
+    console.log("User Identity: @User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value");
+</script>

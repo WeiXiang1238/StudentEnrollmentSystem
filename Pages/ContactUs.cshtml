@@ -1,0 +1,27 @@
+﻿@page
+@model ContactUsModel
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<h2>Contact Us</h2>
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert alert-success">@Model.Message</div>
+}
+
+<form method="post">
+    <div class="mb-3">
+        <label>Email:</label>
+        <input type="email" asp-for="StudentEmail" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label>Subject:</label>
+        <input type="text" asp-for="Subject" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label>Message:</label>
+        <textarea asp-for="Message" class="form-control" rows="5" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

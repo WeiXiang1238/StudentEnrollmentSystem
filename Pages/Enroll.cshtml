@@ -1,0 +1,161 @@
+﻿@page
+@model EnrollModel
+@{
+    ViewData["Title"] = "Course Enrollment";
+}
+
+<h2>Enroll in a Course</h2>
+
+<header class="mb-3">
+    <p>Student: @Model.Student?.Email</p>
+    <p>Semester: @Model.Semester?.Name</p>
+</header>
+
+<div id="enrollmentSection" style="display: block;">
+<!-- Enrollment Form -->
+<form id="enrollmentForm">
+    <div class="mb-3">
+        <label for="courseId">Select Course:</label>
+        <select id="courseId" class="form-control">
+            @foreach (var course in Model.AvailableCourses)
+            {
+                <option value="@course.CourseID">@course.CourseCode - @course.CourseName</option>
+            }
+        </select>
+    </div>
+    <button type="button" class="btn btn-primary" onclick="addCourse()">Add</button>
+</form>
+
+<!-- Enrolled Courses List -->
+
+<h4 class="mt-4">Courses Selected</h4>
+    <table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+                <th>Course Code</th>
+                <th>Course Name</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="enrolledCoursesTable"></tbody>
+</table>
+
+    <div id="alertMessage" class="alert alert-danger" role="alert" style="display: none;">
+        Please select at least one course before proceeding to the summary!
+    </div>
+<!-- Proceed to Summary -->
+<button id="proceedToSummary" class="btn btn-success mt-3" onclick="showSummary()">Proceed to Summary</button>
+</div>
+
+<!-- Summary Section (Initially Hidden) -->
+<div id="summarySection" style="display: none;">
+    <h4>Enrollment Summary</h4>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Course Name</th>
+            </tr>
+        </thead>
+        <tbody id="summaryCoursesTable"></tbody>
+    </table>
+
+    <p id="fee"></p>
+
+    <!-- Hidden input to store selected courses -->
+    <input type="hidden" id="selectedCoursesInput" name="SelectedCoursesJson" />
+
+    <!-- Submit Button -->
+    <button type="button" class="btn btn-primary" onclick="submitEnrollment()">Confirm Enrollment</button>
+
+    <!-- Back Button -->
+    <button type="button" class="btn btn-secondary" onclick="hideSummary()">Back</button>
+</div>
+
+<!-- JavaScript to Handle Dynamic Enrollment -->
+<script>
+    let enrolledCourses = [];
+    let availabelCourse = @Html.Raw(Json.Serialize(Model.AvailableCourses))
+
+    function addCourse() {
+        const courseId = +document.getElementById("courseId").value;
+        const selectedCourse = availabelCourse.find(course => course.courseID === courseId)
+        
+        if (!enrolledCourses.some(c => c.courseID == courseId)) {
+            enrolledCourses.push(selectedCourse);
+
+            let row = `<tr id="row-${selectedCourse.courseID}">
+                            <td>${selectedCourse.courseCode}</td>
+                            <td>${selectedCourse.courseName}</td>
+                            <td>
+                                <button class="btn btn-danger" onclick="removeCourse(${selectedCourse.courseID})">Remove</button>
+                            </td>
+                        </tr>`;
+            document.getElementById("enrolledCoursesTable").innerHTML += row;
+            document.getElementById("alertMessage").style.display = "none";
+        }
+    }
+
+    function removeCourse(courseId) {
+        enrolledCourses = enrolledCourses.filter(c => c.courseID != courseId);
+        document.getElementById(`row-${courseId}`).remove();
+    }
+
+    function showSummary() {
+        if (enrolledCourses.length === 0) {
+            document.getElementById("alertMessage").style.display = "block";
+            return;
+        }
+
+        document.getElementById("alertMessage").style.display = "none";
+
+        if (enrolledCourses.length > 0) {
+            document.getElementById("summarySection").style.display = "block";
+            document.getElementById("proceedToSummary").style.display = "none";
+
+            let summaryTable = document.getElementById("summaryCoursesTable");
+            let totalFee = 0;
+            summaryTable.innerHTML = "";
+            enrolledCourses.forEach(course => {
+                console.log(course)
+                summaryTable.innerHTML += `<tr><td>${course.courseName}</td></tr>`;
+                totalFee += course.amount;
+            });
+
+            let fee = document.getElementById("fee");
+            fee.innerText = "Total Amount: RM " +  totalFee;
+
+            document.getElementById("selectedCoursesInput").value = JSON.stringify(enrolledCourses);
+            document.getElementById("enrollmentSection").style.display = "none";
+        }
+    }
+
+    function hideSummary() {
+        document.getElementById("summarySection").style.display = "none";
+        document.getElementById("proceedToSummary").style.display = "block";
+        document.getElementById("enrollmentSection").style.display = "block";
+    }
+
+    function submitEnrollment() {
+        fetch("/Enroll", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(enrolledCourses) 
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Enrollment submission failed.");
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                enrolledCourses = [];
+                alert("Enrollment successful!");
+                window.location.href = "/Payment";
+            } else {
+                alert("Enrollment failed: " + data.message);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    }
+</script>

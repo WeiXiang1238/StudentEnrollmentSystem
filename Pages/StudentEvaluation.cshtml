@@ -1,0 +1,58 @@
+﻿@page
+@model StudentEvaluationModel
+@{
+    ViewData["Title"] = "Student Evaluation of Teaching";
+}
+
+<h2>Evaluate Your Course</h2>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert alert-success">@Model.Message</div>
+}
+
+<form method="post">
+    <div class="mb-3">
+        <label>Course:</label>
+        <select asp-for="CourseID" class="form-control">
+            @foreach (var course in Model.EnrolledCourses)
+            {
+                <option value="@course.CourseID">@course.CourseName</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label>Rating (1-5):</label>
+        <input type="number" asp-for="Rating" class="form-control" min="1" max="5" required />
+    </div>
+    <div class="mb-3">
+        <label>Comments:</label>
+        <textarea asp-for="Comments" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<!-- Display Evaluations -->
+@if (Model.PreviousEvaluations.Any())
+{
+    <h3 class="mt-4">Previous Evaluations</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Rating</th>
+                <th>Comments</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var evaluation in Model.PreviousEvaluations)
+            {
+                <tr>
+                    <td>@evaluation.Course.CourseName</td>
+                    <td>@evaluation.Rating</td>
+                    <td>@evaluation.Comments</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

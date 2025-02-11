@@ -1,0 +1,207 @@
+﻿@page
+@model TimetableMatchingModel
+@{
+    ViewData["Title"] = "Timetable Matching";
+}
+@if (!Model.ShowTimetable)
+{
+<h2>Timetable Matching</h2>
+
+<!-- Courses To Be Matched -->
+<div class="card p-4 mb-4">
+
+<!-- Add Course -->
+<form method="post" asp-page-handler="AddCourse">
+            <div class="mb-3 d-flex align-items-end">
+
+    <div class="flex-fill me-4">
+        <label>Select Course:</label>
+        <select asp-for="SelectedCourseID" class="form-control">
+            @foreach (var course in Model.AvailableCourses)
+            {
+                <option value="@course.CourseID">@course.CourseName (@course.CourseCode)</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary" style="height: fit-content;">Add Course</button>
+            </div>
+</form>
+        <h3>Courses To Be Matched</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Course Code</th>
+                    <th>Course Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var course in Model.SelectedCourses)
+                {
+                    <tr>
+                        <td>@course.CourseCode</td>
+                        <td>@course.CourseName</td>
+                        <td>
+                            <form method="post" asp-page-handler="RemoveCourse">
+                                <input type="hidden" name="courseId" value="@course.CourseID" />
+                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+   
+
+    <div class="card p-4">
+
+<!-- Add Non-Available Time -->
+    <form method="post" asp-page-handler="AddTime" class="needs-validation" novalidate>
+    <div class="mb-3">
+        <label>Day:</label>
+        <select asp-for="SelectedDay" class="form-control">
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label>Start Time:</label>
+            <div class="input-group has-validation">
+        <input type="time" asp-for="SelectedStartTime" class="form-control" required />
+            <div class="invalid-feedback">
+                Required start time.
+            </div>
+            </div>
+    </div>
+    <div class="mb-3">
+        <label>End Time:</label>
+        <input type="time" asp-for="SelectedEndTime" class="form-control" required />
+                <div class="invalid-feedback">
+                    Required end time.
+                </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Time</button>
+</form>
+        <h3 class="mt-3">Non Available Time</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var time in Model.NonAvailableTimes)
+                {
+                    <tr>
+                        <td>@time.Day</td>
+                        <td>@time.StartTime</td>
+                        <td>@time.EndTime</td>
+                        <td>
+                            <form method="post" asp-page-handler="RemoveTime">
+                                <input type="hidden" name="day" value="@time.Day" />
+                                <input type="hidden" name="startTime" value="@time.StartTime" />
+                                <input type="hidden" name="endTime" value="@time.EndTime" />
+                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+<!-- Start Matching -->
+<form method="post" asp-page-handler="GenerateTimetable">
+    <button type="submit" class="btn btn-success mt-3">Start</button>
+</form>
+}
+else
+{
+
+    <h2 class="show-when-print">Timetable</h2>
+
+    <!-- Student Information -->
+    <div class="border p-3 mb-3 show-when-print">
+        <p><strong>Student:</strong> @Model.StudentInfo.FullName</p>
+        <p><strong>EMAIL:</strong> @Model.StudentInfo.Email</p>
+    </div>
+
+    <!-- Timetable Grid -->
+    <table class="table table-bordered text-center show-when-print">
+        <thead class="bg-primary text-white">
+            <tr>
+                <th>Day</th>
+                @for (int hour = 8; hour <= 23; hour++)
+                {
+                    <th>@hour:00</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var day in new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" })
+            {
+                <tr>
+                    <td class="bg-dark text-white">@day.Substring(0, 3).ToUpper()</td>
+
+                    @for (int hour = 8; hour <= 23; hour++)
+                    {
+                        var course = Model.MatchedTimetable.FirstOrDefault(c => c.Day == day &&
+                            c.StartTime.Hours <= hour &&
+                            c.EndTime.Hours > hour); // Compare full range
+
+                        var nonAvailable = Model.NonAvailableTimes.FirstOrDefault(nt => nt.Day == day &&
+                            TimeSpan.Parse(nt.StartTime).Hours <= hour &&
+                            TimeSpan.Parse(nt.EndTime).Hours > hour); // Compare full range
+
+                        if (course != null)
+                        {
+                            <td class="bg-light">@course.CourseCode @course.CourseName</td>
+                        }
+                        else if (!string.IsNullOrEmpty(nonAvailable.Day))
+                        {
+                            <td class="bg-secondary text-white">N/A</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Print Button -->
+    <button onclick="window.print()" class="btn btn-success mt-3">Print</button>
+    <form method="post" asp-page-handler="Back">
+            <button type="submit" class="btn btn-secondary mt-3">Back</button>
+    </form>
+}
+
+<script>
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+    if (performance.navigation.type === 1) {
+         fetch("/TimetableMatching?handler=AA", { method: "GET" });
+    }
+</script>

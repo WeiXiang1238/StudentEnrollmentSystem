@@ -1,0 +1,142 @@
+﻿@page
+@model PaymentModel
+@{
+    ViewData["Title"] = "Payment";
+}
+
+<h2>Make a Payment</h2>
+
+<!-- Alert for Incorrect Password -->
+<div id="alertMessage" class="alert alert-danger" role="alert" style="display: none;">
+    Incorrect password. Please try again!
+</div>
+
+<!-- Step 1: Select Payment Method -->
+<div id="paymentMethodSection">
+    <div id="summarySection">
+        <h4>Enrollment Summary</h4>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Course Code</th>
+                    <th>Course Name</th>
+                </tr>
+            </thead>
+            <tbody id="summaryCoursesTable">
+                @foreach (var enrollment in Model.Enrollments)
+                {
+                    <tr id="row-@enrollment.Course.CourseID">
+                        <td>@enrollment.Course.CourseCode</td>
+                        <td>@enrollment.Course.CourseName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <p id="fee">Total Amount: @Model.Amount</p>
+    </div>
+
+    <h4>Select Payment Method</h4>
+    <select id="paymentMethod" class="form-control">
+        <option value="Maybank">MayBank</option>
+        <option value="Public Bank">Public Bank</option>
+        <option value="CIMB Bank">CIMB Bank</option>
+        <option value="Touch & Go">Touch & Go</option>
+        <option value="Grab Pay">Grab Pay</option>
+    </select>
+    <button class="btn btn-primary mt-3" onclick="proceedToPassword()">Next</button>
+</div>
+
+<!-- Step 2: Password Confirmation (Initially Hidden) -->
+<div id="passwordSection" style="display: none;">
+    <h4>Confirm Payment</h4>
+    <p>Enter your password to authorize the payment.</p>
+    <input type="password" id="password" class="form-control" required />
+    <button class="btn btn-success mt-3" onclick="validatePassword()">Confirm Payment</button>
+</div>
+
+<!-- Step 3: Show Invoice (Initially Hidden) -->
+<div id="invoiceSection" style="display: none;">
+    <div id="alertMessage" class="alert alert-success" role="alert">
+        Payment Successful!
+    </div>
+
+    <h4>Invoice</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Invoice No.</th>
+                <th>Date</th>
+                <th>Amount (RM)</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="invoiceNo"></td>
+                <td id="invoiceDate"></td>
+                <td id="invoiceAmount"></td>
+                <td><span class="badge bg-success">Paid</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <button class="btn btn-success mt-3" onclick="backToHome()">Complete</button>
+</div>
+
+
+
+<!-- JavaScript for Handling Payments -->
+<script>
+    let selectedPaymentMethod = "";
+    let paymentResponse = {};
+
+    function proceedToPassword() {
+        selectedPaymentMethod = document.getElementById("paymentMethod").value;
+        document.getElementById("paymentMethodSection").style.display = "none";
+        document.getElementById("passwordSection").style.display = "block";
+    }
+
+    function validatePassword() {
+        let password = document.getElementById("password").value;
+
+        fetch("/Payment?handler=VerifyPassword", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `password=${encodeURIComponent(password)}&paymentMethod=${encodeURIComponent(selectedPaymentMethod)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                paymentResponse = data.data;
+                showInvoice();
+            } else {
+                document.getElementById("alertMessage").style.display = "block";
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error)
+            document.getElementById("alertMessage").style.display = "block";
+        });
+    }
+
+    function showInvoice() {
+        document.getElementById("passwordSection").style.display = "none";
+        document.getElementById("invoiceSection").style.display = "block";
+
+        document.getElementById("invoiceNo").innerText = "IN00" + paymentResponse.PaymentID;
+        document.getElementById("invoiceDate").innerText = new Date(paymentResponse.PaymentDate).toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    }).replace(',', ''); ;
+        document.getElementById("invoiceAmount").innerText = "RM " + paymentResponse.Amount;
+    }
+
+    function backToHome(){
+        window.location.replace("/");
+    }
+</script>
