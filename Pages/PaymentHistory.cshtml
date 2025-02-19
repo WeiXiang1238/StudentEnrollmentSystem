@@ -1,0 +1,133 @@
+﻿@page
+@model PaymentHistoryModel
+@{
+    ViewData["Title"] = "Payment History";
+}
+
+<h3>Payment History</h3>
+
+<!-- Date Filter -->
+<form method="post" id="filterForm">
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label class="fw-bold">From</label>
+            <input type="date" asp-for="FromDate" class="form-control" required />
+        </div>
+        <div class="col-md-3">
+            <label class="fw-bold">To</label>
+            <input type="date" asp-for="ToDate" class="form-control" required />
+        </div>
+        <div class="col-md-3 align-self-end">
+            <button type="submit" class="btn btn-primary">View</button>
+            <button type="button" class="btn btn-success" onclick="printPaymentHistory()">Print</button>
+        </div>
+    </div>
+</form>
+
+<!-- Display Payment Records -->
+@if (Model.Payments.Any())
+{
+    <div class="mt-4" id="printableArea">
+        <!-- Student Information -->
+        @if (Model.Student != null)
+        {
+            <div class="card mb-3 p-3 shadow">
+                <div class="row">
+                    <h6 class="col-12 mb-3 fw-bold">Student Info</h6>
+
+                    <!-- Left Column -->
+                    <div class="col-6">
+                        <div class="d-flex">
+                            <span class="fw-bold flex-shrink-0" style="width: 180px;">Student Name:</span>
+                            <span>@Model.Student?.FullName</span>
+                        </div>
+                        <div class="d-flex">
+                            <span class="fw-bold flex-shrink-0" style="width: 180px;">Matriculation No:</span>
+                            <span>@Model.Student?.MatricNo</span>
+                        </div>
+                        <div class="d-flex">
+                            <span class="fw-bold flex-shrink-0" style="width: 180px;">IC No/Passport No:</span>
+                            <span>@Model.Student?.ICNumber</span>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="col-6">
+                        <div class="d-flex">
+                            <span class="fw-bold flex-shrink-0" style="width: 180px;">Semester:</span>
+                            <span>@Model.Semester?.Name</span>
+                        </div>
+                        <div class="d-flex">
+                            <span class="fw-bold flex-shrink-0" style="width: 180px;">Program:</span>
+                            <span>@Model.Student?.Program</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <table class="table table-striped">
+            <thead class="bg-danger text-white">
+                <tr>
+                    <th>Payment ID</th>
+                    <th>Date</th>
+                    <th>Payment Method</th>
+                    <th>Amount (RM)</th>
+                    <th>Invoice</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var payment in Model.Payments)
+                {
+                    <tr>
+                        <td>@payment.PaymentID</td>
+                        <td>@payment.PaymentDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@payment.PaymentMethod</td>
+                        <td>@payment.Amount.ToString("N2")</td>
+                        <td><button class="btn btn-sm btn-outline-primary" onclick="printInvoice(@payment.PaymentID)">Print</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else if (Model.IsDataLoaded) // Only show this message after a search
+{
+    <p class="mt-3 text-danger">No payments found for the selected date range.</p>
+}
+
+<!-- Print Script -->
+<script>
+    function printPaymentHistory() {
+        let style = document.createElement('style');
+        style.innerHTML = `
+            @@media print {
+                body { visibility: hidden; }
+                #printableArea { visibility: visible; width: 100%; position: absolute; left: 0; top: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        document.getElementById("filterForm").style.display = "none";
+        window.print();
+        document.head.removeChild(style);
+        document.getElementById("filterForm").style.display = "block";
+    }
+
+
+    function printInvoice(paymentId) {
+        let invoiceWindow = window.open(`/Receipt?id=${paymentId}`, "_blank");
+        invoiceWindow.focus();
+        invoiceWindow.onload = function () {
+             let style = document.createElement('style');
+        style.innerHTML = `
+            @@media print {
+                body { visibility: hidden; }
+                #printableArea { visibility: visible; width: 100%; position: absolute; left: 0; top: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+            invoiceWindow.print();
+        };
+    }
+</script>

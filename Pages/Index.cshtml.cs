@@ -1,20 +1,42 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using StudentEnrollmentSystem.Database;
+using StudentEnrollmentSystem.Database.Entity;
+using System.Threading.Tasks;
 
-namespace StudentEnrollmentSystem.Pages
+public class IndexModel : PageModel
 {
-    public class IndexModel : PageModel
+    private readonly CoreContext _context;
+
+    public IndexModel(CoreContext context)
     {
-        private readonly ILogger<IndexModel> _logger;
+        _context = context;
+    }
 
-        public IndexModel(ILogger<IndexModel> logger)
+    public Student Student { get; set; }
+
+    public async Task<IActionResult> OnGetAsync()
+    {
+        var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+        Student = await _context.Students.FirstOrDefaultAsync(s => s.Email == email);
+        Admin admin = await _context.Admins.FirstOrDefaultAsync(s => s.Email == email);
+
+        if (Student == null && admin == null)
         {
-            _logger = logger;
+            return RedirectToPage("/Login");
         }
 
-        public void OnGet()
+        if (admin != null)
         {
-
+            Student = new Student()
+            {
+                Email = admin.Email,
+                FullName = admin.Name,
+                StudentID = admin.AdminID
+            };
         }
+
+        return Page();
     }
 }

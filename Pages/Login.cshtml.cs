@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using StudentEnrollmentSystem.Database;
 using StudentEnrollmentSystem.Enums;
 using StudentEnrollmentSystem.Extensions;
+using StudentEnrollmentSystem.Database.Entity;
 
 namespace StudentEnrollmentSystem.Pages
 {
@@ -38,20 +39,37 @@ namespace StudentEnrollmentSystem.Pages
                 return Page();
             }
 
-            object? user = null;
             if (UserType == Role.Student.GetValue())
             {
-                user = await _context.Students.FirstOrDefaultAsync(s => s.Email == Email);
+                Student student = await _context.Students.FirstOrDefaultAsync(s => s.Email == Email);
+
+                if (student == null)
+                {
+                    ErrorMessage = "Invalid credentials.";
+                    return Page();
+                }
+
+                if (!BCrypt.Net.BCrypt.Verify(Password, student.Password))
+                {
+                    ErrorMessage = "Invalid credentials.";
+                    return Page();
+                }
             }
             else if (UserType == Role.Admin.GetValue())
             {
-                user = await _context.Admins.FirstOrDefaultAsync(a => a.Email == Email);
-            }
+                Admin admin = await _context.Admins.FirstOrDefaultAsync(a => a.Email == Email);
 
-            if (user == null)
-            {
-                ErrorMessage = "Invalid credentials.";
-                return Page();
+                if (admin == null)
+                {
+                    ErrorMessage = "Invalid credentials.";
+                    return Page();
+                }
+
+                if (!BCrypt.Net.BCrypt.Verify(Password, admin.Password))
+                {
+                    ErrorMessage = "Invalid credentials.";
+                    return Page();
+                }
             }
 
             HttpContext.Session.Clear();

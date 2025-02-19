@@ -56,6 +56,10 @@ namespace StudentEnrollmentSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContactID"));
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -106,7 +110,7 @@ namespace StudentEnrollmentSystem.Migrations
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
 
-                    b.Property<string>("Faculty")
+                    b.Property<string>("Lecturer")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -130,6 +134,11 @@ namespace StudentEnrollmentSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EnrollmentID"));
 
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
                     b.Property<int>("CourseID")
                         .HasColumnType("int");
 
@@ -141,6 +150,9 @@ namespace StudentEnrollmentSystem.Migrations
 
                     b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("PaymentID")
+                        .HasColumnType("int");
 
                     b.Property<int>("SemesterID")
                         .HasColumnType("int");
@@ -157,40 +169,13 @@ namespace StudentEnrollmentSystem.Migrations
 
                     b.HasIndex("CourseID");
 
+                    b.HasIndex("PaymentID");
+
                     b.HasIndex("SemesterID");
 
                     b.HasIndex("StudentID");
 
                     b.ToTable("Enrollments");
-                });
-
-            modelBuilder.Entity("StudentEnrollmentSystem.Database.Entity.Invoice", b =>
-                {
-                    b.Property<int>("InvoiceID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvoiceID"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("StudentID")
-                        .HasColumnType("int");
-
-                    b.HasKey("InvoiceID");
-
-                    b.HasIndex("StudentID");
-
-                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("StudentEnrollmentSystem.Database.Entity.Payment", b =>
@@ -253,9 +238,13 @@ namespace StudentEnrollmentSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentID"));
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Address1")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Address2")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Bank")
                         .IsRequired()
@@ -269,23 +258,66 @@ namespace StudentEnrollmentSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("ContactNumber")
                         .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
+                    b.Property<string>("Country")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullName")
-                        .IsRequired()
+                    b.Property<string>("EmergencyContactName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("EmergencyContactPhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("EmergencyContactRelationship")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ICNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("MatricNo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostCode")
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
+                    b.Property<string>("Program")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("State")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("StudentID");
 
@@ -321,54 +353,23 @@ namespace StudentEnrollmentSystem.Migrations
 
                     b.Property<string>("Comments")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int>("CourseID")
+                    b.Property<int>("EnrollmentID")
                         .HasColumnType("int");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
-                    b.Property<int>("StudentID")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("EvaluationID");
 
-                    b.HasIndex("CourseID");
-
-                    b.HasIndex("StudentID");
+                    b.HasIndex("EnrollmentID");
 
                     b.ToTable("TeachingEvaluations");
-                });
-
-            modelBuilder.Entity("StudentEnrollmentSystem.Database.Entity.Timetable", b =>
-                {
-                    b.Property<int>("TimetableID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TimetableID"));
-
-                    b.Property<int>("CourseID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Day")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Time")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Venue")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("TimetableID");
-
-                    b.HasIndex("CourseID");
-
-                    b.ToTable("Timetables");
                 });
 
             modelBuilder.Entity("StudentEnrollmentSystem.Database.Entity.Enrollment", b =>
@@ -378,6 +379,10 @@ namespace StudentEnrollmentSystem.Migrations
                         .HasForeignKey("CourseID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("StudentEnrollmentSystem.Database.Entity.Payment", "Payment")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("PaymentID");
 
                     b.HasOne("StudentEnrollmentSystem.Database.Entity.Semester", "Semester")
                         .WithMany()
@@ -393,18 +398,9 @@ namespace StudentEnrollmentSystem.Migrations
 
                     b.Navigation("Course");
 
+                    b.Navigation("Payment");
+
                     b.Navigation("Semester");
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("StudentEnrollmentSystem.Database.Entity.Invoice", b =>
-                {
-                    b.HasOne("StudentEnrollmentSystem.Database.Entity.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Student");
                 });
@@ -422,35 +418,21 @@ namespace StudentEnrollmentSystem.Migrations
 
             modelBuilder.Entity("StudentEnrollmentSystem.Database.Entity.TeachingEvaluation", b =>
                 {
-                    b.HasOne("StudentEnrollmentSystem.Database.Entity.Course", "Course")
+                    b.HasOne("StudentEnrollmentSystem.Database.Entity.Enrollment", "Enrollment")
                         .WithMany()
-                        .HasForeignKey("CourseID")
+                        .HasForeignKey("EnrollmentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("StudentEnrollmentSystem.Database.Entity.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("StudentEnrollmentSystem.Database.Entity.Timetable", b =>
-                {
-                    b.HasOne("StudentEnrollmentSystem.Database.Entity.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
+                    b.Navigation("Enrollment");
                 });
 
             modelBuilder.Entity("StudentEnrollmentSystem.Database.Entity.Course", b =>
+                {
+                    b.Navigation("Enrollments");
+                });
+
+            modelBuilder.Entity("StudentEnrollmentSystem.Database.Entity.Payment", b =>
                 {
                     b.Navigation("Enrollments");
                 });

@@ -7,7 +7,8 @@ namespace StudentEnrollmentSystem.Database.Entity
     {
         [Key]
         public int ContactID { get; set; }
-
+        [Required]
+        public string Category { get; set; }
         [Required]
         public string StudentEmail { get; set; }
 

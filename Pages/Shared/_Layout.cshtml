@@ -1,98 +1,203 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @using StudentEnrollmentSystem.Enums;
 @inject IAuthorizationService Authorization
+
 @if (!User.Identity.IsAuthenticated)
 {
     <script>
         window.location.href = "/Login";
     </script>
 }
+
 @{
     bool isAuthenticated = User.Identity.IsAuthenticated;
     int userRole = isAuthenticated ? int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value) : -1;
+    string currentPath = Context.Request.Path;
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - StudentEnrollmentSystem</title>
+    <title>@ViewData["Title"] - Student Enrollment System</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/StudentEnrollmentSystem.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        /* Enable dropdown on hover */
+        .navbar .dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0;
+        }
+
+        /* Hide default dropdown arrow */
+        .navbar .dropdown-toggle::after {
+            display: none !important;
+        }
+
+        /* Hover effect */
+        .navbar-nav .nav-link:hover,
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #f8d7da !important; /* Light red background */
+            color: #721c24 !important; /* Darker text */
+            border-radius: 4px;
+        }
+
+        /* Active Page Styling */
+        .navbar-nav .nav-link.active,
+        .dropdown-menu .dropdown-item.active {
+            font-weight: bold !important;
+            color: #dc3545 !important; /* Bootstrap red */
+            border-radius: 4px;
+            background-color: transparent;
+        }
+    </style>
 </head>
 <body>
     @if (Context.Request.Path != "/Login")
     {
         <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm py-3">
                 <div class="container">
-                    <a class="navbar-brand" asp-area="" asp-page="/Index">StudentEnrollmentSystem</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+                    <a class="navbar-brand fw-bold text-danger me-5" asp-page="/Index">
+                        <i class="fas fa-graduation-cap"></i> Enrollment System
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1">
-                            @if (userRole == (int)Role.Student)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/ContactUs">Contact Us</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/TimetableMatching">Timetable Matching</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/StudentEvaluation">Evaluation</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Enroll">Enroll</a>
-                                </li>
-                            }
 
-                            @if (userRole == (int)Role.Admin)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Enroll">Home</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Enroll">Enroll</a>
-                                </li>
-                            }
-                            
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Logout">Logout</a>
-                            </li>
-                        </ul>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <ul class="navbar-nav me-3" style="height: fit-content;">
+                                @if (userRole == (int)Role.Student)
+                                {
+                                    <!-- Enrollment Dropdown -->
+                                    <li class="nav-item dropdown me-2">
+                                        <a class="nav-link dropdown-toggle @(currentPath.StartsWith("/Enroll") ? "active" : "")"
+                                           href="#" id="enrollmentDropdown">Enrollment</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item @(currentPath == "/Enroll" ? "active" : "")" asp-page="/Enroll">Course Enrollment</a></li>
+                                        </ul>
+                                    </li>
+
+                                    <!-- Add/Drop Dropdown -->
+                                    <li class="nav-item dropdown me-2">
+                                        <a class="nav-link dropdown-toggle @(currentPath.StartsWith("/AddDrop") ? "active" : "")"
+                                           href="#" id="addDropDropdown">Add / Drop</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item @(currentPath == "/AddDropCourse" ? "active" : "")" asp-page="/AddDropCourse">Course Add/Drop</a></li>
+                                            <li><a class="dropdown-item @(currentPath == "/AddDropHistory" ? "active" : "")" asp-page="/AddDropHistory">Add/Drop History</a></li>
+                                        </ul>
+                                    </li>
+
+                                    <!-- Enquiry Dropdown -->
+                                    <li class="nav-item dropdown me-2">
+                                        <a class="nav-link dropdown-toggle @(currentPath.StartsWith("/ContactUs") || currentPath.StartsWith("/TimetableMatching") ? "active" : "")"
+                                           href="#" id="enquiryDropdown">Enquiry</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item @(currentPath == "/ContactUs" ? "active" : "")" asp-page="/ContactUs">Contact Us</a></li>
+                                            <li><a class="dropdown-item @(currentPath == "/TimetableMatching" ? "active" : "")" asp-page="/TimetableMatching">Timetable Matching</a></li>
+                                            <li><a class="dropdown-item @(currentPath == "/StudentEvaluation" ? "active" : "")" asp-page="/StudentEvaluation">Student Evaluation</a></li>
+                                        </ul>
+                                    </li>
+
+                                    <!-- Statement Dropdown -->
+                                    <li class="nav-item dropdown me-2">
+                                        <a class="nav-link dropdown-toggle @(currentPath.StartsWith("/StudentStatement") ? "active" : "")"
+                                           href="#" id="statementDropdown">Statement</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item @(currentPath == "/StudentStatement" ? "active" : "")" asp-page="/StudentStatement">Student Statement</a></li>
+                                            <li><a class="dropdown-item @(currentPath == "/RegistrationSummary" ? "active" : "")" asp-page="/RegistrationSummary">Registration Summary / Class Timetable</a></li>
+                                        </ul>
+                                    </li>
+
+                                    <!-- Payment Dropdown -->
+                                    <li class="nav-item dropdown me-2">
+                                        <a class="nav-link dropdown-toggle @(currentPath.StartsWith("/Payment") ? "active" : "")"
+                                           href="#" id="paymentDropdown">Payment</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item @(currentPath == "/Payment" ? "active" : "")" asp-page="/Payment">Make Payment</a></li>
+                                            <li><a class="dropdown-item @(currentPath == "/PaymentHistory" ? "active" : "")" asp-page="/PaymentHistory">Online Payment History / Receipt</a></li>
+                                            <li><a class="dropdown-item @(currentPath == "/InvoiceAdjustment" ? "active" : "")" asp-page="/InvoiceAdjustment">Invoice & Adjustment Note</a></li>
+                                        </ul>
+                                    </li>
+
+                                    <!-- Account Dropdown -->
+                                    <li class="nav-item dropdown me-2">
+                                        <a class="nav-link dropdown-toggle @(currentPath.StartsWith("/ChangePassword") || currentPath.StartsWith("/Update") ? "active" : "")"
+                                           href="#" id="accountDropdown">Account</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item @(currentPath == "/ChangePassword" ? "active" : "")" asp-page="/ChangePassword">Change Password</a></li>
+                                            <li><a class="dropdown-item @(currentPath == "/UpdateProfile" ? "active" : "")" asp-page="/UpdateProfile">Update Profile</a></li>
+                                            <li><a class="dropdown-item @(currentPath == "/UpdateBankDetail" ? "active" : "")" asp-page="/UpdateBankDetail">Update Bank Details</a></li>
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+
+                            <div class="dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center p-0" href="#" id="profileDropdown"
+                                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img src="https://ui-avatars.com/api/?name=@(Model.Student.FullName.Replace(" ", "+"))&background=random&size=40"
+                                         alt="User Avatar" class="rounded-circle border border-danger"
+                                         style="width: 40px; height: 40px;">
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end position-absolute end-0" aria-labelledby="profileDropdown" style="right: 0;">
+                                    <li class="dropdown-header text-center">
+                                        <strong>@Model.Student.FullName</strong>
+                                        <br />
+                                        <small class="text-muted">@Model.Student.Email</small>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" asp-page="/ChangePassword"><i class="fas fa-key me-2"></i> Change Password</a></li>
+                                    @if (userRole == (int)Role.Student)
+                                    {
+                                        <li><a class="dropdown-item" asp-page="/UpdateProfile"><i class="fas fa-user-edit me-2"></i> Update Profile</a></li>
+                                        <li><a class="dropdown-item" asp-page="/UpdateBankDetail"><i class="fas fa-university me-2"></i> Update Bank Details</a></li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" asp-page="/Logout"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </nav>
         </header>
     }
+
+    <!-- Display Welcome Message on Index -->
+    @if (Context.Request.Path == "/Index")
+    {
+        <div class="container text-center mt-4">
+            <h2 class="text-danger fw-bold">Welcome to Online Enrollment Portal!</h2>
+        </div>
+    }
+
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="py-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted mt-5">
         <div class="container">
-            &copy; 2025 - StudentEnrollmentSystem - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            &copy; 2025 - Student Enrollment System - Privacy
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     <script>
-        console.log(document.referrer, window.location.pathname)
-        if((document.referrer.startsWith("https://localhost:44372/TimetableMatching") ||  document.referrer == "https://localhost:44372/TimetableMatching") && ！window.location.pathname.startsWith("/TimetableMatching")){
+        // Check if user navigated away from TimetableMatching, then clear session
+        if ((document.referrer.startsWith("https://localhost:44372/TimetableMatching") ||
+             document.referrer === "https://localhost:44372/TimetableMatching") &&
+             !window.location.pathname.startsWith("/TimetableMatching")) {
             fetch("/TimetableMatching?clearSession=true", { method: "GET" });
         }
     </script>

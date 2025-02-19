@@ -28,12 +28,14 @@ public class TimetableMatchingModel : PageModel
 
     [BindProperty]
     public string SelectedEndTime { get; set; }
-    public Student? StudentInfo { get; set; }
+    public Student? Student { get; set; }
     public List<Course> AvailableCourses { get; set; } = new List<Course>();
     public List<Course> SelectedCourses { get; set; } = new List<Course>();
     public List<Course> MatchedTimetable { get; set; } = new List<Course>();
     public List<(string Day, string StartTime, string EndTime)> NonAvailableTimes { get; set; } = new();
     public bool ShowTimetable { get; set; } = false;
+    public Semester Semester { get; set; }
+
     public async Task<IActionResult> OnGetAsync(bool clearSession = false, bool showTimetable = false)
     {
         if (clearSession)
@@ -44,9 +46,13 @@ public class TimetableMatchingModel : PageModel
 
         ShowTimetable = showTimetable;
         var studentEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-        StudentInfo = await _context.Students.FirstOrDefaultAsync(s => s.Email == studentEmail);
-
-        if (StudentInfo == null)
+        Student = await _context.Students.FirstOrDefaultAsync(s => s.Email == studentEmail);
+        SystemSetting? setting = await _context.SystemSettings.SingleOrDefaultAsync(e => e.SystemSettingID == 1);
+        if (setting != null)
+        {
+            Semester = await _context.Semesters.SingleOrDefaultAsync(e => e.SemesterID == setting.CurrentSemester);
+        }
+        if (Student == null)
         {
             return RedirectToPage("/Login");
         }
@@ -54,7 +60,7 @@ public class TimetableMatchingModel : PageModel
         // Get all available courses
         AvailableCourses = await _context.Enrollments
             .Include(e => e.Course)
-            .Where(e => e.StudentID == StudentInfo.StudentID && e.Status == "Active")
+            .Where(e => e.StudentID == Student.StudentID && e.Status == "Active")
             .Select(e => e.Course)
             .ToListAsync();
 

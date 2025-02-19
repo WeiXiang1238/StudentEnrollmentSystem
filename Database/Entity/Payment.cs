@@ -7,19 +7,15 @@ namespace StudentEnrollmentSystem.Database.Entity
     {
         [Key]
         public int PaymentID { get; set; }
-
         [ForeignKey("Student")]
         public int StudentID { get; set; }
-
         [Required]
         public decimal Amount { get; set; }
-
         [Required]
         public DateTime PaymentDate { get; set; }
-
         [StringLength(50)]
         public string PaymentMethod { get; set; }
-
         public Student Student { get; set; }
+        public ICollection<Enrollment> Enrollments { get; set; }
     }
 }

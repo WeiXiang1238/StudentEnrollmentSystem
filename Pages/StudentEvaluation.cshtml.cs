@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using StudentEnrollmentSystem.Database;
 using StudentEnrollmentSystem.Database.Entity;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,39 +19,57 @@ public class StudentEvaluationModel : PageModel
     }
 
     [BindProperty]
-    public int CourseID { get; set; }
+    [Required(ErrorMessage = "Please select a course.")]
+    public int EnrollmentID { get; set; } // Now linked to Enrollment
 
     [BindProperty]
+    [Required(ErrorMessage = "Please provide a rating between 1 and 5.")]
+    [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5.")]
     public int Rating { get; set; }
 
     [BindProperty]
+    [StringLength(500, ErrorMessage = "Comments cannot exceed 500 characters.")]
     public string Comments { get; set; }
 
-    public List<Course> EnrolledCourses { get; set; }
-    public List<TeachingEvaluation> PreviousEvaluations { get; set; }
+    public List<Enrollment> EnrolledCourses { get; set; } = new();
+    public List<TeachingEvaluation> PreviousEvaluations { get; set; } = new();
     public string Message { get; set; }
+    public Student Student { get; set; }
 
     public async Task<IActionResult> OnGetAsync()
     {
         var studentEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-        var student = await _context.Students.FirstOrDefaultAsync(s => s.Email == studentEmail);
+        Student = await _context.Students.FirstOrDefaultAsync(s => s.Email == studentEmail);
 
-        if (student == null)
+        if (Student == null)
         {
             return RedirectToPage("/Login");
         }
 
-        // Get courses the student is enrolled in
-        EnrolledCourses = await _context.Enrollments
+        // Get active enrollments
+        var enrolledCourses = await _context.Enrollments
             .Include(e => e.Course)
-            .Where(e => e.StudentID == student.StudentID && e.Status == "Active")
-            .Select(e => e.Course)
+            .Include(e => e.Semester)
+            .Where(e => e.StudentID == Student.StudentID && e.Status == "Active")
             .ToListAsync();
+
+        // Get evaluations that already exist
+        var evaluatedEnrollmentIds = await _context.TeachingEvaluations
+            .Where(te => te.Enrollment.StudentID == Student.StudentID)
+            .Select(te => te.EnrollmentID)
+            .ToListAsync();
+
+        // Filter unenrolled courses that haven't been evaluated
+        EnrolledCourses = enrolledCourses
+            .Where(e => !evaluatedEnrollmentIds.Contains(e.EnrollmentID))
+            .ToList();
 
         // Get previous evaluations
         PreviousEvaluations = await _context.TeachingEvaluations
-            .Include(te => te.Course)
-            .Where(te => te.StudentID == student.StudentID)
+            .Include(te => te.Enrollment.Course)
+            .Include(te => te.Enrollment.Semester)
+            .Where(te => te.Enrollment.StudentID == Student.StudentID)
+            .OrderByDescending(te => te.SubmittedAt)
             .ToListAsync();
 
         return Page();
@@ -57,6 +77,11 @@ public class StudentEvaluationModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+
         var studentEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
         var student = await _context.Students.FirstOrDefaultAsync(s => s.Email == studentEmail);
 
@@ -65,18 +90,39 @@ public class StudentEvaluationModel : PageModel
             return RedirectToPage("/Login");
         }
 
+        var enrollment = await _context.Enrollments
+            .Include(e => e.Course)
+            .Include(e => e.Semester)
+            .FirstOrDefaultAsync(e => e.EnrollmentID == EnrollmentID && e.StudentID == student.StudentID && e.Status == "Active");
+
+        if (enrollment == null)
+        {
+            TempData["Message"] = "Invalid enrollment selection.";
+            return RedirectToPage();
+        }
+
+        // Check if evaluation already exists
+        var existingEvaluation = await _context.TeachingEvaluations
+            .FirstOrDefaultAsync(te => te.EnrollmentID == EnrollmentID);
+
+        if (existingEvaluation != null)
+        {
+            TempData["Message"] = "You have already evaluated this course.";
+            return RedirectToPage();
+        }
+
         var evaluation = new TeachingEvaluation
         {
-            StudentID = student.StudentID,
-            CourseID = CourseID,
+            EnrollmentID = enrollment.EnrollmentID,
             Rating = Rating,
-            Comments = Comments
+            Comments = Comments,
+            SubmittedAt = DateTime.Now
         };
 
         _context.TeachingEvaluations.Add(evaluation);
         await _context.SaveChangesAsync();
 
-        Message = "Evaluation submitted successfully!";
+        TempData["Message"] = "Evaluation submitted successfully!";
         return RedirectToPage();
     }
 }

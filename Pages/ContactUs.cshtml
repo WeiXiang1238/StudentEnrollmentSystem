@@ -4,24 +4,89 @@
     ViewData["Title"] = "Contact Us";
 }
 
-<h2>Contact Us</h2>
-@if (!string.IsNullOrEmpty(Model.Message))
+<h3>Contact Us</h3>
+
+@if (TempData["Message"] != null)
 {
-    <div class="alert alert-success">@Model.Message</div>
+    <div class="alert alert-success">@TempData["Message"]</div>
 }
 
-<form method="post">
-    <div class="mb-3">
-        <label>Email:</label>
-        <input type="email" asp-for="StudentEmail" class="form-control" required />
-    </div>
-    <div class="mb-3">
-        <label>Subject:</label>
-        <input type="text" asp-for="Subject" class="form-control" required />
-    </div>
-    <div class="mb-3">
-        <label>Message:</label>
-        <textarea asp-for="Message" class="form-control" rows="5" required></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<div class="card p-4 shadow">
+    <form method="post" id="contactForm" novalidate>
+        <!-- Category Dropdown -->
+        <div class="mb-3">
+            <label for="SelectedCategory" class="form-label fw-bold">Category</label>
+            <select asp-for="SelectedCategory" class="form-control" required>
+                <option value="" disabled selected>Select a category</option>
+                @foreach (var category in Model.Categories)
+                {
+                    <option value="@category">@category</option>
+                }
+            </select>
+            <span class="text-danger" asp-validation-for="SelectedCategory"></span>
+        </div>
+
+        <!-- Subject Input -->
+        <div class="mb-3">
+            <label for="Subject" class="form-label fw-bold">Subject</label>
+            <input type="text" asp-for="Subject" class="form-control" required />
+            <span class="text-danger" asp-validation-for="Subject"></span>
+        </div>
+
+        <!-- Message Textarea -->
+        <div class="mb-3">
+            <label for="Message" class="form-label fw-bold">Message</label>
+            <textarea asp-for="Message" class="form-control" rows="4" required></textarea>
+            <span class="text-danger" asp-validation-for="Message"></span>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+</div>
+
+<!-- Enable ASP.NET Core Client-side Validation -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("contactForm");
+
+        form.addEventListener("submit", function (event) {
+            let isValid = true;
+
+            // Validate Category
+            const category = document.getElementById("SelectedCategory");
+            if (!category.value) {
+                category.classList.add("is-invalid");
+                isValid = false;
+            } else {
+                category.classList.remove("is-invalid");
+            }
+
+            // Validate Subject
+            const subject = document.getElementById("Subject");
+            if (subject.value.trim() === "") {
+                subject.classList.add("is-invalid");
+                isValid = false;
+            } else {
+                subject.classList.remove("is-invalid");
+            }
+
+            // Validate Message
+            const message = document.getElementById("Message");
+            if (message.value.trim() === "") {
+                message.classList.add("is-invalid");
+                isValid = false;
+            } else {
+                message.classList.remove("is-invalid");
+            }
+
+            if (!isValid) {
+                event.preventDefault(); // Stop form submission if validation fails
+            }
+        });
+    });
+</script>

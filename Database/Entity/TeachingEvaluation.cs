@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StudentEnrollmentSystem.Database.Entity
 {
@@ -8,19 +9,26 @@ namespace StudentEnrollmentSystem.Database.Entity
         [Key]
         public int EvaluationID { get; set; }
 
-        [ForeignKey("Student")]
-        public int StudentID { get; set; }
-
-        [ForeignKey("Course")]
-        public int CourseID { get; set; }
+        [ForeignKey("Enrollment")]
+        public int EnrollmentID { get; set; }
 
         [Required]
-        public int Rating { get; set; } // Scale of 1-5
+        public int Rating { get; set; }
 
+        [StringLength(1000)]
         public string Comments { get; set; }
 
-        // Navigation Properties
-        public Student Student { get; set; }
-        public Course Course { get; set; }
+        public DateTime SubmittedAt { get; set; } = DateTime.Now;
+
+        public Enrollment Enrollment { get; set; }
+
+        [NotMapped]
+        public int StudentID => Enrollment.StudentID;
+
+        [NotMapped]
+        public int CourseID => Enrollment.CourseID;
+
+        [NotMapped]
+        public int SemesterID => Enrollment.SemesterID;
     }
 }

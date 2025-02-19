@@ -19,12 +19,13 @@ public class RegistrationSummaryModel : PageModel
 
     public Student Student { get; set; }
     public Semester CurrentSemester { get; set; }
-    public List<Enrollment> EnrolledCourses { get; set; }
+    public List<Enrollment> EnrolledCourses { get; set; } = new();
 
     public async Task<IActionResult> OnGetAsync()
     {
         var studentEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-        Student = await _context.Students.FirstOrDefaultAsync(s => s.Email == studentEmail);
+        Student = await _context.Students
+            .FirstOrDefaultAsync(s => s.Email == studentEmail);
 
         if (Student == null)
         {
@@ -32,11 +33,14 @@ public class RegistrationSummaryModel : PageModel
         }
 
         var systemSetting = await _context.SystemSettings.FirstOrDefaultAsync();
-        CurrentSemester = await _context.Semesters.FirstOrDefaultAsync(s => s.SemesterID == systemSetting.CurrentSemester);
+        CurrentSemester = await _context.Semesters
+            .FirstOrDefaultAsync(s => s.SemesterID == systemSetting.CurrentSemester);
 
+        // **Fetch only Active Enrolled Courses (Excludes Dropped Courses)**
         EnrolledCourses = await _context.Enrollments
             .Include(e => e.Course)
-            .Where(e => e.StudentID == Student.StudentID && e.SemesterID == CurrentSemester.SemesterID)
+            .Include(e => e.Semester) // Ensure Semester details are available
+            .Where(e => e.StudentID == Student.StudentID && e.SemesterID == CurrentSemester.SemesterID && e.Status == "Active")
             .ToListAsync();
 
         return Page();

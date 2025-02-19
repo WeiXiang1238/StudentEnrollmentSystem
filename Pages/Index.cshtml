@@ -1,14 +1,154 @@
 ﻿@page
+@using StudentEnrollmentSystem.Enums;
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Home";
 }
+@{
+    int userRole = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value);
+}
+<style>
+    /* Set default link color to black */
+    .card-body a {
+    color: black !important;
+    transition: color 0.3s ease-in-out;
+    padding: 4px;
+    }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    /* Change link color to red on hover */
+    .card-body a:hover {
+    background-color: #f8d7da !important; /* Bootstrap red */
+    }
+</style>
+
+<div class="container text-center mt-5">
+    <!-- Dashboard Sections -->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @if (userRole == (int)Role.Student)
+        {
+            <!-- Enrollment Section -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-danger text-white  fw-bold">
+                        <i class="fas fa-book-open me-2"></i> Enrollment
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-center p-0 my-2">
+                        <a asp-page="/Enroll" class="d-block text-decoration-none text-center">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Course Enrollment
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add/Drop Section -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-danger text-white fw-bold">
+                        <i class="fas fa-exchange-alt me-2"></i> Add / Drop
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-center p-0 my-2">
+                        <a asp-page="/AddDropCourse" class="d-block text-decoration-none text-center my-2">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Course Add/Drop
+                        </a>
+                        <a asp-page="/AddDropHistory" class="d-block text-decoration-none text-center mb-2">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Add/Drop History
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enquiry Section -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-danger text-white fw-bold">
+                        <i class="fas fa-question-circle me-2"></i> Enquiry
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-center p-0 my-2">
+                        <a asp-page="/ContactUs" class="d-block text-decoration-none text-center my-2">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Contact Us
+                        </a>
+                        <a asp-page="/TimetableMatching" class="d-block text-decoration-none text-center mb-2">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Timetable Matching
+                        </a>
+                        <a asp-page="/StudentEvaluation" class="d-block text-decoration-none text-center mb-2">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Student Evaluation
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statement Section -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-danger text-white fw-bold">
+                        <i class="fas fa-file-alt me-2"></i> Statement
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-center p-0 my-2">
+                        <a asp-page="/StudentStatement" class="d-block text-decoration-none text-center  my-2">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Student Statement
+                        </a>
+                        <a asp-page="/RegistrationSummary" class="d-block text-decoration-none text-center  mb-2">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Registration Summary / Class Timetable
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Section -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-danger text-white fw-bold">
+                        <i class="fas fa-credit-card me-2"></i> Payment
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-center p-0 my-2">
+                        <a asp-page="/Payment" class="d-block text-decoration-none text-center  my-2">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Make Payment
+                        </a>
+                        <a asp-page="/PaymentHistory" class="d-block text-decoration-none text-center  mb-2">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Online Payment History / Receipt
+                        </a>
+                        <a asp-page="/InvoiceList" class="d-block text-decoration-none text-center  mb-2">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Invoice & Adjustment Note
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Section -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-danger text-white fw-bold">
+                        <i class="fas fa-user-cog me-2"></i> Account
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-center p-0 my-2">
+                        <a asp-page="/ChangePassword" class="d-block text-decoration-none text-center my-2">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Change Password
+                        </a>
+                        <a asp-page="/UpdateProfile" class="d-block text-decoration-none text-center  mb-2">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Update Profile
+                        </a>
+                        <a asp-page="/UpdateBankDetail" class="d-block text-decoration-none text-center  mb-2">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Update Bank Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+        else{
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-danger text-white  fw-bold">
+                        <i class="fas fa-book-open me-2"></i> Enquiry
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-center p-0 my-2">
+                        <a asp-page="/ContactUsList" class="d-block text-decoration-none text-center my-2">
+                            <i class="fas fa-thumbtack me-2" style="color: #DC3545"></i> Contact Us
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <p class="mt-5 text-muted">&copy; Copyright 2025 INTI International University. All Rights Reserved.</p>
 </div>
-<script>
-    console.log("User Identity: @User.Identity.IsAuthenticated");
-    console.log("User Identity: @User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value");
-</script>

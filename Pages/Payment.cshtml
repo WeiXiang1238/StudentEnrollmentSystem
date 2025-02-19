@@ -4,86 +4,101 @@
     ViewData["Title"] = "Payment";
 }
 
-<h2>Make a Payment</h2>
+<h3>Make a Payment</h3>
 
-<!-- Alert for Incorrect Password -->
-<div id="alertMessage" class="alert alert-danger" role="alert" style="display: none;">
-    Incorrect password. Please try again!
-</div>
-
-<!-- Step 1: Select Payment Method -->
-<div id="paymentMethodSection">
-    <div id="summarySection">
-        <h4>Enrollment Summary</h4>
-        <table class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>Course Code</th>
-                    <th>Course Name</th>
-                </tr>
-            </thead>
-            <tbody id="summaryCoursesTable">
-                @foreach (var enrollment in Model.Enrollments)
-                {
-                    <tr id="row-@enrollment.Course.CourseID">
-                        <td>@enrollment.Course.CourseCode</td>
-                        <td>@enrollment.Course.CourseName</td>
+@if (!Model.Enrollments.Any())
+{
+    <div class="alert alert-info">
+        No outstanding payments. You have no courses requiring payment at this time.
+    </div>
+}
+else
+{
+    <!-- Step 1: Display Summary & Select Payment Method -->
+    <div id="paymentMethodSection" class="card p-4 shadow">
+        <div id="summarySection">
+            <h4 class="fw-bold">Enrollment Summary</h4>
+            <table class="table table-striped">
+                <thead class="bg-danger text-white">
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Course Name</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody id="summaryCoursesTable">
+                    @foreach (var enrollment in Model.Enrollments)
+                    {
+                        <tr>
+                            <td>@enrollment.Course.CourseCode</td>
+                            <td>@enrollment.Course.CourseName</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
 
-        <p id="fee">Total Amount: @Model.Amount</p>
+            <p id="fee" class="fw-bold text-danger fs-5">Total Amount: RM @Model.Amount.ToString("N2")</p>
+        </div>
+
+        <h4 class="fw-bold mt-3">Select Payment Method</h4>
+        <select id="paymentMethod" class="form-control">
+            <option value="Maybank">MayBank</option>
+            <option value="Public Bank">Public Bank</option>
+            <option value="CIMB Bank">CIMB Bank</option>
+            <option value="Touch & Go">Touch & Go</option>
+            <option value="Grab Pay">Grab Pay</option>
+        </select>
+        <button class="btn btn-success mt-3 w-100" onclick="proceedToPassword()">Next</button>
     </div>
 
-    <h4>Select Payment Method</h4>
-    <select id="paymentMethod" class="form-control">
-        <option value="Maybank">MayBank</option>
-        <option value="Public Bank">Public Bank</option>
-        <option value="CIMB Bank">CIMB Bank</option>
-        <option value="Touch & Go">Touch & Go</option>
-        <option value="Grab Pay">Grab Pay</option>
-    </select>
-    <button class="btn btn-primary mt-3" onclick="proceedToPassword()">Next</button>
-</div>
-
-<!-- Step 2: Password Confirmation (Initially Hidden) -->
-<div id="passwordSection" style="display: none;">
-    <h4>Confirm Payment</h4>
-    <p>Enter your password to authorize the payment.</p>
-    <input type="password" id="password" class="form-control" required />
-    <button class="btn btn-success mt-3" onclick="validatePassword()">Confirm Payment</button>
-</div>
-
-<!-- Step 3: Show Invoice (Initially Hidden) -->
-<div id="invoiceSection" style="display: none;">
-    <div id="alertMessage" class="alert alert-success" role="alert">
-        Payment Successful!
+    <!-- Step 2: Password Confirmation -->
+    <div id="passwordSection" class="card p-4 shadow mt-3" style="display: none;">
+        <h4 class="fw-bold">Confirm Payment</h4>
+        <p>Enter your password to authorize the payment.</p>
+        <input type="password" id="password" class="form-control" required />
+        <button class="btn btn-success mt-3 w-100" onclick="validatePassword()">Confirm Payment</button>
     </div>
 
-    <h4>Invoice</h4>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Invoice No.</th>
-                <th>Date</th>
-                <th>Amount (RM)</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td id="invoiceNo"></td>
-                <td id="invoiceDate"></td>
-                <td id="invoiceAmount"></td>
-                <td><span class="badge bg-success">Paid</span></td>
-            </tr>
-        </tbody>
-    </table>
-    <button class="btn btn-success mt-3" onclick="backToHome()">Complete</button>
-</div>
+    <!-- Step 3: Show Invoice -->
+    <div id="invoiceSection" class="card p-4 shadow mt-3" style="display: none;">
+        <div class="alert alert-success text-center">Payment Successful!</div>
 
+        <div id="invoicePrintArea" class="border p-3 mb-3">
+            <h4 class="fw-bold text-danger text-center">INVOICE</h4>
 
+            <!-- Invoice Details -->
+            <div class="row">
+                <div class="col-6">
+                    <p><strong>Invoice No:</strong> <span id="invoiceNo"></span></p>
+                    <p><strong>Date:</strong> <span id="invoiceDate"></span></p>
+                </div>
+                <div class="col-6 text-end">
+                    <p><strong>Status:</strong> <span class="badge bg-success">Paid</span></p>
+                    <p><strong>Amount (RM):</strong> <span id="invoiceAmount" class="fw-bold"></span></p>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- Payment Summary -->
+            <div class="row">
+                <div class="col-12">
+                    <p><strong>Payment Method:</strong> <span id="invoicePaymentMethod"></span></p>
+                    <p><strong>Paid By:</strong> <span id="invoicePaidBy"></span></p>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- Thank You Message -->
+            <p class="text-center text-muted">Thank you for your payment. If you have any questions, please contact support.</p>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <button class="btn btn-primary" onclick="printInvoice()">Print Invoice</button>
+            <button class="btn btn-success" onclick="backToHome()">Complete</button>
+        </div>
+    </div>
+}
 
 <!-- JavaScript for Handling Payments -->
 <script>
@@ -110,13 +125,34 @@
                 paymentResponse = data.data;
                 showInvoice();
             } else {
-                document.getElementById("alertMessage").style.display = "block";
+                alert("Incorrect password. Please try again!");
             }
         })
         .catch(error => {
-            console.error("Error:", error)
-            document.getElementById("alertMessage").style.display = "block";
+            console.error("Error:", error);
+            alert("An error occurred. Please try again.");
         });
+    }
+
+    function printInvoice() {
+        let printContents = document.getElementById("invoicePrintArea").innerHTML;
+        let originalContents = document.body.innerHTML;
+        let styleSheet = document.createElement("style");
+        styleSheet.innerHTML = `
+        @@media print {
+            body {
+               visibility: none !important;
+            }
+            #printable {
+               visibility: visible !important;
+            }
+        }`;
+        document.head.appendChild(styleSheet);
+
+        document.body.innerHTML = `<div class='container mt-5' id="printable">${printContents}</div>`;
+        window.print();
+
+        document.body.innerHTML = originalContents;
     }
 
     function showInvoice() {
@@ -125,18 +161,21 @@
 
         document.getElementById("invoiceNo").innerText = "PAY-" + paymentResponse.PaymentID;
         document.getElementById("invoiceDate").innerText = new Date(paymentResponse.PaymentDate).toLocaleString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true
-    }).replace(',', ''); ;
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        }).replace(',', '');
+
         document.getElementById("invoiceAmount").innerText = "RM " + paymentResponse.Amount;
+        document.getElementById("invoicePaymentMethod").innerText = paymentResponse.PaymentMethod;
+        document.getElementById("invoicePaidBy").innerText = paymentResponse.Student.FullName; // Ensure Student Name is included in response
     }
 
-    function backToHome(){
+    function backToHome() {
         window.location.replace("/");
     }
 </script>

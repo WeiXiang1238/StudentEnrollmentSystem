@@ -13,8 +13,6 @@ namespace StudentEnrollmentSystem.Database
         public DbSet<Course> Courses { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<Payment> Payments { get; set; }
-        public DbSet<Invoice> Invoices { get; set; }
-        public DbSet<Timetable> Timetables { get; set; }
         public DbSet<TeachingEvaluation> TeachingEvaluations { get; set; }
         public DbSet<Semester> Semesters { get; set; }
         public DbSet<SystemSetting> SystemSettings { get; set; }

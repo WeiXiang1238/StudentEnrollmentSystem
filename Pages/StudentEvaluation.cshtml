@@ -4,55 +4,109 @@
     ViewData["Title"] = "Student Evaluation of Teaching";
 }
 
-<h2>Evaluate Your Course</h2>
+<h3 class="text">Student Evaluation</h3>
 
-@if (!string.IsNullOrEmpty(Model.Message))
+@if (TempData["Message"] != null)
 {
-    <div class="alert alert-success">@Model.Message</div>
+    <div class="alert alert-success">@TempData["Message"]</div>
 }
 
-<form method="post">
-    <div class="mb-3">
-        <label>Course:</label>
-        <select asp-for="CourseID" class="form-control">
-            @foreach (var course in Model.EnrolledCourses)
-            {
-                <option value="@course.CourseID">@course.CourseName</option>
-            }
-        </select>
-    </div>
-    <div class="mb-3">
-        <label>Rating (1-5):</label>
-        <input type="number" asp-for="Rating" class="form-control" min="1" max="5" required />
-    </div>
-    <div class="mb-3">
-        <label>Comments:</label>
-        <textarea asp-for="Comments" class="form-control"></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<div class="card p-4 shadow">
+    <form method="post" id="evaluationForm" novalidate>
+        <!-- Course Selection -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Course</label>
+            <select asp-for="EnrollmentID" class="form-control" required>
+                <option value="" disabled selected>Select a course</option>
+                @foreach (var enrollment in Model.EnrolledCourses)
+                {
+                    <option value="@enrollment.EnrollmentID">@enrollment.Course.CourseName</option>
+                }
+            </select>
+            <span class="text-danger" asp-validation-for="EnrollmentID"></span>
+        </div>
 
-<!-- Display Evaluations -->
+        <!-- Rating -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Rating (1-5)</label>
+            <input type="number" asp-for="Rating" id="rating" class="form-control" min="1" max="5" required />
+            <span class="text-danger" asp-validation-for="Rating"></span>
+        </div>
+
+        <!-- Comments -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Comments</label>
+            <textarea asp-for="Comments" class="form-control" rows="4"></textarea>
+            <span class="text-danger" asp-validation-for="Comments"></span>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-success">Submit Evaluation</button>
+    </form>
+</div>
+
+<!-- Previous Evaluations Table -->
 @if (Model.PreviousEvaluations.Any())
 {
-    <h3 class="mt-4">Previous Evaluations</h3>
+    <h4 class="mt-4 text-center">Previous Evaluations</h4>
     <table class="table table-striped">
-        <thead>
+        <thead class="bg-danger text-white">
             <tr>
                 <th>Course</th>
+                <th>Semester</th>
                 <th>Rating</th>
                 <th>Comments</th>
+                <th>Submitted At</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var evaluation in Model.PreviousEvaluations)
             {
                 <tr>
-                    <td>@evaluation.Course.CourseName</td>
+                    <td>@evaluation.Enrollment.Course.CourseName</td>
+                    <td>@evaluation.Enrollment.Semester.Name</td>
                     <td>@evaluation.Rating</td>
                     <td>@evaluation.Comments</td>
+                    <td>@evaluation.SubmittedAt.ToString("yyyy-MM-dd HH:mm")</td>
                 </tr>
             }
         </tbody>
     </table>
 }
+
+<!-- Enable ASP.NET Core Client-side Validation -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("evaluationForm");
+
+        form.addEventListener("submit", function (event) {
+            let isValid = true;
+
+            // Validate Course Selection
+            const course = document.getElementById("EnrollmentID");
+            if (!course.value) {
+                course.classList.add("is-invalid");
+                isValid = false;
+            } else {
+                course.classList.remove("is-invalid");
+            }
+
+            // Validate Rating
+            const rating = document.getElementById("rating");
+            if (rating.value < 1 || rating.value > 5 || rating.value.trim() === "") {
+                rating.classList.add("is-invalid");
+                isValid = false;
+            } else {
+                rating.classList.remove("is-invalid");
+            }
+
+            if (!isValid) {
+                event.preventDefault(); // Stop form submission if validation fails
+            }
+        });
+    });
+</script>

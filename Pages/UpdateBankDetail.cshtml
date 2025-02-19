@@ -1,0 +1,88 @@
+﻿@page
+@model UpdateBankDetailModel
+@{
+    ViewData["Title"] = "Update Bank Detail";
+}
+
+<h2>Update Bank Detail</h2>
+
+<!-- Display Alert Messages -->
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert @(Model.IsSuccess ? "alert-success" : "alert-danger")" role="alert">
+        @Model.Message
+    </div>
+}
+
+
+    <!-- Update Bank Details Form -->
+    <form method="post" id="bankForm" class="needs-validation" novalidate>
+        <div class="mb-3">
+            <label for="bank" class="form-label">Bank Name</label>
+            <input type="text" id="bank" asp-for="Student.Bank" class="form-control" required />
+            <span class="text-danger" asp-validation-for="Student.Bank"></span>
+        </div>
+
+        <div class="mb-3">
+            <label for="bankAccName" class="form-label">Bank Account Name</label>
+            <input type="text" id="bankAccName" asp-for="Student.BankAccName" class="form-control" required />
+            <span class="text-danger" asp-validation-for="Student.BankAccName"></span>
+        </div>
+
+        <div class="mb-3">
+            <label for="bankAccNum" class="form-label">Bank Account Number</label>
+            <input type="text" id="bankAccNum" asp-for="Student.BankAccNum" class="form-control" required pattern="\d+" />
+            <span class="text-danger" asp-validation-for="Student.BankAccNum"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Bank Details</button>
+    </form>
+@if (Model.IsSuccess)
+{
+    <a href="/" class="btn btn-secondary mt-3">Back to Home</a>
+}
+<!-- JavaScript Form Validation -->
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("bankForm");
+
+            form.addEventListener("submit", function (event) {
+                let isValid = true;
+
+                // Validate Bank Name (must not be empty)
+                let bank = document.getElementById("bank");
+                if (bank.value.trim() === "") {
+                    bank.classList.add("is-invalid");
+                    isValid = false;
+                } else {
+                    bank.classList.remove("is-invalid");
+                }
+
+                // Validate Bank Account Name (must not be empty)
+                let bankAccName = document.getElementById("bankAccName");
+                if (bankAccName.value.trim() === "") {
+                    bankAccName.classList.add("is-invalid");
+                    isValid = false;
+                } else {
+                    bankAccName.classList.remove("is-invalid");
+                }
+
+                // Validate Bank Account Number (must be digits only)
+                let bankAccNum = document.getElementById("bankAccNum");
+                let bankAccNumPattern = /^\d+$/;
+                if (!bankAccNumPattern.test(bankAccNum.value)) {
+                    bankAccNum.classList.add("is-invalid");
+                    isValid = false;
+                } else {
+                    bankAccNum.classList.remove("is-invalid");
+                }
+
+                if (!isValid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            });
+        });
+    </script>
+}

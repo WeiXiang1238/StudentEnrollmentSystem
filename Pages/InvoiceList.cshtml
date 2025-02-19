@@ -1,0 +1,65 @@
+﻿@page
+@model InvoiceListModel
+@{
+    ViewData["Title"] = "Invoice List";
+}
+
+<h3 class="text-danger">Invoice and Adjustment Note</h3>
+
+<!-- Semester Selection -->
+<form method="get" id="semesterFilterForm">
+    <div class="mb-3">
+        <label class="fw-bold">Select Semester:</label>
+        <select asp-for="SelectedSemesterID" asp-items="Model.Semesters" class="form-control" onchange="this.form.submit()">
+            <option value="">-- Select Semester --</option>
+        </select>
+    </div>
+</form>
+
+<!-- Invoice Table -->
+@if (Model.Invoices.Any())
+{
+    <table class="table table-striped">
+        <thead class="table-dark text-white">
+            <tr>
+                <th>Particulars</th>
+                <th>Type</th>
+                <th>Document Date / Due Date</th>
+                <th>Amount (RM)</th>
+                <th>Amount Settled (RM)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var invoice in Model.Invoices)
+            {
+                <tr>
+                    <td>
+                        <a href="/Invoice?id=@invoice.PaymentID" class="text-primary fw-bold">
+                            PAY-@invoice.PaymentID
+                        </a>
+                    </td>
+                    <td>INVOICE</td>
+                    <td>@invoice.PaymentDate.ToString("dd/MM/yyyy")</td>
+                    <td>@invoice.Amount.ToString("N2")</td>
+                    <td>@invoice.Amount.ToString("N2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="mt-3 text-danger">No invoices found for the selected semester.</p>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let semesterSelect = document.getElementById("SelectedSemesterID");
+            if (semesterSelect.value === "" && semesterSelect.options.length > 1) {
+                semesterSelect.selectedIndex = 1; // Select the first valid semester
+                semesterSelect.form.submit();
+            }
+        });
+    </script>
+}

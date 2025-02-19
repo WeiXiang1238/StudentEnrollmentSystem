@@ -28,8 +28,24 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
+[C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/AddDropCourse.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRkRHJvcENvdXJzZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/AddDropHistory.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRkRHJvcEhpc3RvcnkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/ChangePassword.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2hhbmdlUGFzc3dvcmQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/ContactUs.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29udGFjdFVzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/ContactUsList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29udGFjdFVzTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/Enroll.cshtml]
@@ -44,6 +60,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/Invoice.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW52b2ljZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/InvoiceList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW52b2ljZUxpc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -56,8 +80,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUGF5bWVudC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/Privacy.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJpdmFjeS5jc2h0bWw=
+[C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/PaymentHistory.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUGF5bWVudEhpc3RvcnkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/Receipt.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVjZWlwdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/RegistrationSummary.cshtml]
@@ -78,6 +106,14 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/TimetableMatching.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVGltZXRhYmxlTWF0Y2hpbmcuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/UpdateBankDetail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXBkYXRlQmFua0RldGFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/UpdateProfile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXBkYXRlUHJvZmlsZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/User/Desktop/INTI/Term8/PRG3204E - WEB APPLICATION DEVELOPMENT/StudentEnrollmentSystem/Pages/_ViewImports.cshtml]

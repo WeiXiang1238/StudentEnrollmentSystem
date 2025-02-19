@@ -1,0 +1,175 @@
+﻿@page
+@model UpdateProfileModel
+@{
+    ViewData["Title"] = "Update Profile";
+}
+
+<h2>Update Profile</h2>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert @(Model.IsSuccess ? "alert-success" : "alert-danger")" role="alert">
+        @Model.Message
+    </div>
+}
+
+<form method="post" id="updateProfileForm" class="needs-validation" novalidate>
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                <input type="text" asp-for="Student.FullName" class="form-control" required />
+                <span class="text-danger" asp-validation-for="Student.FullName"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Matriculation No</label>
+                <input type="text" asp-for="Student.MatricNo" class="form-control" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">IC No/Passport No</label>
+                <input type="text" asp-for="Student.ICNumber" class="form-control" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Program</label>
+                <input type="text" asp-for="Student.Program" class="form-control" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Contact Number</label>
+                <input type="text" asp-for="Student.ContactNumber" class="form-control" pattern="^\d{10,15}$" required />
+                <span class="text-danger" asp-validation-for="Student.ContactNumber"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" asp-for="Student.Email" class="form-control" readonly />
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">Address Line 1</label>
+                <input type="text" asp-for="Student.Address1" class="form-control" required />
+                <span class="text-danger" asp-validation-for="Student.Address1"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Address Line 2</label>
+                <input type="text" asp-for="Student.Address2" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Postcode</label>
+                <input type="text" asp-for="Student.PostCode" class="form-control" pattern="^\d{5}$" required />
+                <span class="text-danger" asp-validation-for="Student.PostCode"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">City</label>
+                <input type="text" asp-for="Student.City" class="form-control" required />
+                <span class="text-danger" asp-validation-for="Student.City"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">State</label>
+                <input type="text" asp-for="Student.State" class="form-control" required />
+                <span class="text-danger" asp-validation-for="Student.State"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Country</label>
+                <input type="text" asp-for="Student.Country" class="form-control" required />
+                <span class="text-danger" asp-validation-for="Student.Country"></span>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="text-danger mt-3">Emergency Contact</h4>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">Emergency Contact Name</label>
+                <input type="text" asp-for="Student.EmergencyContactName" class="form-control" required />
+                <span class="text-danger" asp-validation-for="Student.EmergencyContactName"></span>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="mb-3">
+                <label class="form-label">Relationship</label>
+                <input type="text" asp-for="Student.EmergencyContactRelationship" class="form-control" required />
+                <span class="text-danger" asp-validation-for="Student.EmergencyContactRelationship"></span>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="mb-3">
+                <label class="form-label">Phone Number</label>
+                <input type="text" asp-for="Student.EmergencyContactPhoneNumber" class="form-control" pattern="^\d{10,15}$" required />
+                <span class="text-danger" asp-validation-for="Student.EmergencyContactPhoneNumber"></span>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Profile</button>
+</form>
+@if (Model.IsSuccess)
+{
+    <button class="btn btn-secondary mt-3" onclick="window.location.replace('/')">
+        Back to Home
+    </button>
+}
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (function () {
+            'use strict';
+            var form = document.getElementById('updateProfileForm');
+
+            form.addEventListener('submit', function (event) {
+                let isValid = true;
+
+                // Check each required input
+                form.querySelectorAll("[required]").forEach(input => {
+                    if (!input.value.trim()) {
+                        input.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        input.classList.remove("is-invalid");
+                    }
+                });
+
+                // Validate Postcode (5-digit number)
+                let postcode = document.getElementById("PostCode");
+                if (postcode && !/^\d{5}$/.test(postcode.value)) {
+                    postcode.classList.add("is-invalid");
+                    isValid = false;
+                } else {
+                    postcode.classList.remove("is-invalid");
+                }
+
+                // Validate Phone Numbers (10-15 digits)
+                let phoneInputs = document.querySelectorAll("[pattern='^\\d{10,15}$']");
+                phoneInputs.forEach(input => {
+                    if (!input.value.match(/^\d{10,15}$/)) {
+                        input.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        input.classList.remove("is-invalid");
+                    }
+                });
+
+                if (!isValid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }, false);
+        })();
+    </script>
+}

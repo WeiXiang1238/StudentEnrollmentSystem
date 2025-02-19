@@ -1,0 +1,74 @@
+﻿@page
+@model AddDropHistoryModel
+@{
+    ViewData["Title"] = "Add/Drop Course History";
+}
+
+<h3>Add/Drop Course History</h3>
+
+@if (!Model.History.Any())
+{
+    <div class="alert alert-warning">No history found.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead class="bg-danger text-white">
+            <tr>
+                <th>#</th>
+                <th>Course Code</th>
+                <th>Course Name</th>
+                <th>Semester</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var (entry, index) in Model.History.Select((value, i) => (value, i + 1)))
+            {
+                <tr>
+                    <td>@index</td>
+                    <td>@entry.CourseCode</td>
+                    <td>@entry.CourseName</td>
+                    <td>@entry.Semester</td>
+                    <td>@entry.Date.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>
+                        <span class="badge @(entry.Action == "Add" ? "bg-success" : "bg-danger")">
+                            @entry.Action
+                        </span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<!-- Print Button -->
+<button onclick="printHistory()" class="btn btn-success mt-3">Print</button>
+
+@section Scripts {
+    <script>
+        function printHistory() {
+            let styleSheet = document.createElement("style");
+            styleSheet.innerHTML = `
+                @@media print {
+                    body {
+                        visibility: none !important;
+                    }
+                    #printable {
+                        visibility: visible !important;
+                    }
+                }
+            `;
+            document.head.appendChild(styleSheet);
+
+            // Print the page
+            window.print();
+
+            // Restore the original CSS after printing
+            setTimeout(() => {
+                document.head.removeChild(styleSheet);
+            }, 1000);
+        }
+    </script>
+}

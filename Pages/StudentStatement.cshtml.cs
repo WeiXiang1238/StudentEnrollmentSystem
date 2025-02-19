@@ -19,17 +19,37 @@ public class StudentStatementModel : PageModel
     [BindProperty]
     public DateTime ToDate { get; set; } = DateTime.Now;
 
-    public List<StatementEntry> StatementData { get; set; } = new List<StatementEntry>();
+    public List<StatementEntry> StatementData { get; set; }
 
     public decimal TotalDue { get; set; }
     public decimal TotalPaid { get; set; }
     public Student Student { get; set; }
+    public Semester Semester { get; set; }
+    public async Task<IActionResult> OnGetAsync()
+    {
+        var studentEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+        Student = await _context.Students.FirstOrDefaultAsync(s => s.Email == studentEmail);
+        SystemSetting? setting = await _context.SystemSettings.SingleOrDefaultAsync(e => e.SystemSettingID == 1);
+        if (setting != null)
+        {
+            Semester = await _context.Semesters.SingleOrDefaultAsync(e => e.SemesterID == setting.CurrentSemester);
+        }
+        if (Student == null)
+        {
+            return RedirectToPage("/Login");
+        }
 
+        return Page();
+    }
     public async Task<IActionResult> OnPostAsync()
     {
         var studentEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
         Student = await _context.Students.FirstOrDefaultAsync(s => s.Email == studentEmail);
-
+        SystemSetting? setting = await _context.SystemSettings.SingleOrDefaultAsync(e => e.SystemSettingID == 1);
+        if (setting != null)
+        {
+            Semester = await _context.Semesters.SingleOrDefaultAsync(e => e.SemesterID == setting.CurrentSemester);
+        }
         if (Student == null)
         {
             return RedirectToPage("/Login");

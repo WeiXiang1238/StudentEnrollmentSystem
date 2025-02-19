@@ -1,20 +1,33 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using StudentEnrollmentSystem.Database;
 using StudentEnrollmentSystem.Database.Entity;
-using StudentEnrollmentSystem.Enums;
 
 namespace StudentEnrollmentSystem.Pages
 {
     public class LayoutModel : PageModel
     {
-        private readonly ILogger<LayoutModel> _logger;
+        private readonly CoreContext _context;
 
-        public LayoutModel(ILogger<LayoutModel> logger)
+        public LayoutModel(CoreContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
-        public void OnGet()
+        public Student Student { get; set; }
+
+        public async Task<IActionResult> OnGetAsync()
         {
+            var studentEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            Student = await _context.Students.FirstOrDefaultAsync(s => s.Email == studentEmail);
+
+            if (Student == null)
+            {
+                return RedirectToPage("/Login");
+            }
+
+            return Page();
         }
     }
 }
