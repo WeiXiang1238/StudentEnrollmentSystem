@@ -109,7 +109,7 @@
             </table>
 
             <!-- Summary -->
-            <h4 class="mt-4">Balance - University Fee</h4>
+            <h4 class="mt-4">Balance - Tuition Fee</h4>
             <table class="table table-bordered">
                 <thead class="bg-dark text-white">
                     <tr>
@@ -122,7 +122,7 @@
                     <tr>
                         <td>@Model.TotalDue.ToString("N2")</td>
                         <td>@Model.TotalPaid.ToString("N2")</td>
-                        <td>@(Model.TotalDue - Model.TotalPaid).ToString("N2")</td>
+                        <td>@(Model.TotalDue - Model.TotalPaid)</td>
                     </tr>
                 </tbody>
             </table>

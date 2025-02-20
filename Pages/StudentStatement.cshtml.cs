@@ -62,7 +62,7 @@ public class StudentStatementModel : PageModel
         var enrollments = await _context.Enrollments
             .Include(e => e.Course)
             .Include(e => e.Semester)
-            .Where(e => e.StudentID == Student.StudentID && e.EnrollmentDate >= FromDate && e.EnrollmentDate <= ToDate)
+            .Where(e => e.StudentID == Student.StudentID && e.EnrollmentDate >= FromDate && e.EnrollmentDate <= ToDate.AddDays(1).AddTicks(-1))
             .Select(e => new StatementEntry
             {
                 Date = e.EnrollmentDate.Date, // Ignore time
@@ -79,7 +79,7 @@ public class StudentStatementModel : PageModel
         // Fetch payments and assign semester dynamically
         var payments = await _context.Payments
             .Include(p => p.Student)
-            .Where(p => p.StudentID == Student.StudentID && p.PaymentDate >= FromDate && p.PaymentDate <= ToDate)
+            .Where(p => p.StudentID == Student.StudentID && p.PaymentDate >= FromDate && p.PaymentDate <= ToDate.AddDays(1).AddTicks(-1))
             .ToListAsync(); // Fetch first, process in-memory
 
         var paymentEntries = payments.Select(p => new StatementEntry
